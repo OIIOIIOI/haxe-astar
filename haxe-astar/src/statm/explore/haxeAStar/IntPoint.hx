@@ -2,7 +2,7 @@ package statm.explore.haxeAStar;
 
 /**
  * 整数坐标。
- * 
+ *
  * @author statm
  */
 
@@ -11,9 +11,10 @@ class IntPoint
 	public var x:Int;
 	public var y:Int;
 	
-	public function new()
+	public function new(_x:Int = 0, _y:Int = 0)
 	{
-		x = y = 0;
+		x = _x;
+		y = _y;
 	}
 	
 	public function equals(pt:IntPoint):Bool

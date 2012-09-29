@@ -8,11 +8,11 @@ import statm.explore.haxeAStar.heuristics.Manhattan;
 
 /**
  * A* 寻路。
- * 
+ *
  * @author statm
  */
 
-class AStar 
+class AStar
 {
 	// 开销
 	public inline static var ADJ_COST:Int = 10;
@@ -30,7 +30,7 @@ class AStar
 		updateMap();
 	}
 	
-	public function updateMap() 
+	public function updateMap()
 	{
 		_width = _map.colTotal;
 		_height = _map.rowTotal;
@@ -123,52 +123,65 @@ class AStar
 		
 		// 开格子
 		completed = false;
+		var array:Array<IntPoint>;
 		while (!completed)
 		{
 			minX = currentNode.x - 1 < 0 ? 0 : currentNode.x - 1;
 			maxX = currentNode.x + 1 >= _width ? _width - 1 : currentNode.x + 1;
 			minY = currentNode.y - 1 < 0 ? 0 : currentNode.y - 1;
 			maxY = currentNode.y + 1 >= _height ? _height - 1 : currentNode.y + 1;
+			array = new Array<IntPoint>();
 			
-			for (y in minY...maxY + 1)
+			if (_map.allowDiag) {
+				for (y in minY...maxY + 1) {
+					for (x in minX...maxX + 1) {
+						array.push(new IntPoint(x, y));
+					}
+				}
+			}
+			else {
+				array.push(new IntPoint(minX, currentNode.y));
+				array.push(new IntPoint(maxX, currentNode.y));
+				array.push(new IntPoint(currentNode.x, minY));
+				array.push(new IntPoint(currentNode.x, maxY));
+			}
+			
+			for (ip in array)
 			{
-				for (x in minX...maxX + 1)
+				nextNode = _nodeArray[ip.x][ip.y];
+				
+				if (nextNode == currentNode
+					|| !nextNode.walkable)
 				{
-					nextNode = _nodeArray[x][y];
-					
-					if (nextNode == currentNode
-						|| !nextNode.walkable)
-					{
-						continue;
-					}
-					
-					cost = ADJ_COST;
-					if (!(currentNode.x == nextNode.x || currentNode.y == nextNode.y))
-					{
-						cost = DIAG_COST;
-					}
-					
-					g = currentNode.g + cost;
-					f = g + _heuristic.getCost(nextNode, _destNode);
-					
-					if (Lambda.indexOf(_openList, nextNode) != -1
-						|| Lambda.indexOf(_closedList, nextNode) != -1)
-					{
-						if (nextNode.f > f)
-						{
-							nextNode.f = f;
-							nextNode.g = g;
-							nextNode.parent = currentNode;
-						}
-					}
-					else
+					continue;
+				}
+				
+				cost = ADJ_COST;
+				if (!(currentNode.x == nextNode.x || currentNode.y == nextNode.y))
+				{
+					cost = DIAG_COST;
+				}
+				
+				g = currentNode.g + cost;
+				f = g + _heuristic.getCost(nextNode, _destNode);
+				
+				if (Lambda.indexOf(_openList, nextNode) != -1
+					|| Lambda.indexOf(_closedList, nextNode) != -1)
+				{
+					if (nextNode.f > f)
 					{
 						nextNode.f = f;
 						nextNode.g = g;
 						nextNode.parent = currentNode;
-						
-						_openList.push(nextNode);
 					}
+				}
+				else
+				{
+					nextNode.f = f;
+					nextNode.g = g;
+					nextNode.parent = currentNode;
+					
+					_openList.push(nextNode);
 				}
 			}
 			

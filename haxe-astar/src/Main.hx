@@ -22,10 +22,10 @@ import statm.explore.haxeAStar.Node;
  * @author statm
  */
 
-class Main 
+class Main
 {
 	
-	static function main() 
+	static function main()
 	{
 		var stage = Lib.current.stage;
 		stage.scaleMode = StageScaleMode.NO_SCALE;
@@ -52,6 +52,7 @@ class MapDisplay extends Sprite, implements IAStarClient
 	
 	public var rowTotal(default, null):Int;
 	public var colTotal(default, null):Int;
+	public var allowDiag(default, null):Bool;
 	
 	public function isWalkable(x:Int, y:Int):Bool
 	{
@@ -60,13 +61,15 @@ class MapDisplay extends Sprite, implements IAStarClient
 	
 	private var mapData:Array<Bool>;
 	
-	public function new(row:Int, col:Int)
+	public function new(row:Int, col:Int, diag:Bool = true)
 	{
 		super();
 		
 		rowTotal = row;
 		colTotal = col;
 		shuffle();
+		
+		allowDiag = diag;
 		
 		this.addEventListener(MouseEvent.CLICK, clickHandler);
 	}
